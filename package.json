@@ -1,0 +1,19 @@
+{
+"name": "btc-sentiment-miniapp",
+"version": "1.0.0",
+"private": true,
+"scripts": {
+"dev": "next dev",
+"build": "next build",
+"start": "next start"
+},
+"dependencies": {
+"next": "latest",
+"react": "latest",
+"react-dom": "latest",
+"sentiment": "^5.0.2",
+"node-fetch": "^2.6.7",
+"chart.js": "^4.4.0",
+"react-chartjs-2": "^5.2.0"
+}
+}

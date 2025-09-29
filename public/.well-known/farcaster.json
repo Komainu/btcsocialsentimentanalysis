@@ -1,0 +1,22 @@
+{
+"accountAssociation": {
+"header": "",
+"payload": "",
+"signature": ""
+},
+"frame": {
+"version": "1",
+"name": "BTC Sentiment Mini App",
+"subtitle": "BTC sentiment demo",
+"description": "A demo Farcaster Mini App that shows BTC social sentiment",
+"iconUrl": "https://<your-vercel-domain>.vercel.app/icon.png",
+"splashImageUrl": "https://<your-vercel-domain>.vercel.app/hero.png",
+"splashBackgroundColor": "#ffffff",
+"homeUrl": "https://<your-vercel-domain>.vercel.app",
+"webhookUrl": "https://<your-vercel-domain>.vercel.app/api/ingest",
+"primaryCategory": "finance",
+"tags": ["btc", "sentiment"],
+"heroImageUrl": "https://<your-vercel-domain>.vercel.app/hero.png",
+"buttonTitle": "Analyze"
+}
+}

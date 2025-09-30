@@ -1,22 +1,22 @@
 {
-"accountAssociation": {
-"header": "",
-"payload": "",
-"signature": ""
-},
-"frame": {
-"version": "1",
-"name": "BTC Sentiment Mini App",
-"subtitle": "BTC sentiment demo",
-"description": "A demo Farcaster Mini App that shows BTC social sentiment",
-"iconUrl": "https://<your-vercel-domain>.vercel.app/icon.png",
-"splashImageUrl": "https://<your-vercel-domain>.vercel.app/hero.png",
-"splashBackgroundColor": "#ffffff",
-"homeUrl": "https://<your-vercel-domain>.vercel.app",
-"webhookUrl": "https://<your-vercel-domain>.vercel.app/api/ingest",
-"primaryCategory": "finance",
-"tags": ["btc", "sentiment"],
-"heroImageUrl": "https://<your-vercel-domain>.vercel.app/hero.png",
-"buttonTitle": "Analyze"
-}
+  "accountAssociation": {
+    "header": "eyJmaWQiOjE5MzQ5OCwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweGE2NTNEQ0ZGNTUxMDkwYzExNjU2M2M5Y0ZmNEIxZTc1NDgxNDYxYWYifQ",
+    "payload": "eyJkb21haW4iOiJidGNzb2NpYWxzZW50aW1lbnRhbmFseXNpcy52ZXJjZWwuYXBwIn0",
+    "signature": "MHhmMzJlMDVjNzg2OWFiMzI5NDM1MzRkN2VkMzIyOTE3OGY4MDM4NGI1MjM2MWU4MmM2OGEzY2YzNTI3MGI3MjQ0NTljNzE3ZmUxY2ViNzlkZjBhYzVhMmMwN2JjYzJiZGFhZjlmMTIzZmQ0NzEzMzczOTAxMjY4OTU5MjM5ZTFkMjFj"
+  },
+  "frame": {
+    "version": "1",
+    "name": "BTC Social Sentiment Dashboard",
+    "subtitle": "Demo Mini App",
+    "description": "Displays BTC social sentiment in real-time.",
+    "iconUrl": "https://btcsocialsentimentanalysis.vercel.app/icon.png",
+    "splashImageUrl": "https://btcsocialsentimentanalysis.vercel.app/hero.png",
+    "splashBackgroundColor": "#000000",
+    "homeUrl": "https://btcsocialsentimentanalysis.vercel.app",
+    "webhookUrl": "https://btcsocialsentimentanalysis.vercel.app/api/ingest",
+    "primaryCategory": "social",
+    "tags": ["BTC", "crypto", "sentiment"],
+    "heroImageUrl": "https://btcsocialsentimentanalysis.vercel.app/hero.png",
+    "buttonTitle": "Open App"
+  }
 }

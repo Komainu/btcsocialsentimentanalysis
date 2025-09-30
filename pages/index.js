@@ -1,81 +1,47 @@
-// pages/index.js
-import { useEffect, useState } from "react";
-import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-} from "chart.js";
+// pages/api/ingest.js
+import Sentiment from "sentiment";
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+const sentiment = new Sentiment();
 
-export default function Home() {
-  const [summary, setSummary] = useState(null);
-  const [history, setHistory] = useState([]); // keep last X avg scores for chart
-  const [loading, setLoading] = useState(false);
+// In-memory store (サーバーが稼働している間だけ保持)
+if (!global.__SENTIMENT_STORE__) {
+  global.__SENTIMENT_STORE__ = {
+    items: [] // { id, text, source, score, comparative, createdAt }
+  };
+}
 
-  async function fetchSummary() {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/summary?n=50");
-      const j = await res.json();
-      if (j.ok) {
-        setSummary(j);
-        setHistory((h) => {
-          const newH = [
-            ...h,
-            { t: new Date(j.timestamp).toLocaleTimeString(), avg: j.stats.avgScore }
-          ];
-          return newH.slice(-20);
-        });
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
-  useEffect(() => {
-    fetchSummary();
-    const id = setInterval(fetchSummary, 15000); // 15s poll
-    return () => clearInterval(id);
-  }, []);
+  try {
+    const payload = req.body || {};
+    const text = payload.text || payload.message || "";
+    const source = payload.source || "unknown";
 
-  const chartData = {
-    labels: history.map((h) => h.t),
-    datasets: [
-      {
-        label: "Average sentiment score",
-        data: history.map((h) => h.avg),
-        borderColor: "rgba(75,192,192,1)",
-        backgroundColor: "rgba(75,192,192,0.2)",
-        tension: 0.3
-      }
-    ]
-  };
+    if (!text || typeof text !== "string") {
+      return res.status(400).json({ error: "Missing text field in body" });
+    }
 
-  return (
-    <div style={{ padding: "20px" }}>
-      <h1>Farcaster Sentiment Dashboard</h1>
+    const result = sentiment.analyze(text);
+    const entry = {
+      id: `${Date.now()}-${Math.floor(Math.random() * 10000)}`,
+      text,
+      source,
+      score: result.score,
+      comparative: result.comparative,
+      createdAt: new Date().toISOString()
+    };
 
-      {loading && <p>Loading...</p>}
+    // ストアに追加
+    global.__SENTIMENT_STORE__.items.unshift(entry);
+    // 最大 200 件まで保持
+    global.__SENTIMENT_STORE__.items = global.__SENTIMENT_STORE__.items.slice(0, 200);
 
-      {summary ? (
-        <div>
-          <p>
-            Latest average score: <strong>{summary.stats.avgScore}</strong>
-          </p>
-          <Line data={chartData} />
-        </div>
-      ) : (
-        <p>No data yet.</p>
-      )}
-    </div>
-  );
+    res.status(200).json({ ok: true, entry });
+  } catch (err) {
+    console.error("ingest error", err);
+    return res.status(500).json({ error: "internal error" });
+  }
 }

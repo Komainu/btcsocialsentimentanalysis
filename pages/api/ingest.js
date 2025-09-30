@@ -1,54 +1,29 @@
 // pages/api/ingest.js
-import Sentiment from "sentiment";
-
-
-const sentiment = new Sentiment();
-
-
-// In-memory store (demo). Vercel のファンクションは永続しない点に注意
-if (!global.__SENTIMENT_STORE__) {
-global.__SENTIMENT_STORE__ = {
-items: [] // { id, text, source, score, comparative, createdAt }
-};
-}
-
+import { supabase } from '../../lib/supabaseClient'
 
 export default async function handler(req, res) {
-if (req.method !== "POST") {
-return res.status(405).json({ error: "Method not allowed" });
-}
+  const today = new Date().toISOString().slice(0,10)
 
+  // DBにあるか確認
+  const { data, error } = await supabase
+    .from('sentiments')
+    .select('*')
+    .eq('date', today)
 
-try {
-const payload = req.body || {};
-const text = payload.text || payload.message || "";
-const source = payload.source || "unknown";
+  if (data && data.length > 0) {
+    return res.status(200).json(data[0])
+  }
 
+  // 外部API呼び出し（ダミー）
+  const sentiment = { 
+    date: today, 
+    sentiment_score: 0.72, 
+    summary: "全体的にポジティブ",
+    sources: ["twitter", "reddit"]
+  }
 
-if (!text || typeof text !== "string") {
-return res.status(400).json({ error: "Missing text field in body" });
-}
+  // DBに保存
+  await supabase.from('sentiments').insert(sentiment)
 
-
-const result = sentiment.analyze(text);
-const entry = {
-id: `${Date.now()}-${Math.floor(Math.random() * 10000)}`,
-text,
-source,
-score: result.score,
-comparative: result.comparative,
-createdAt: new Date().toISOString()
-};
-
-
-global.__SENTIMENT_STORE__.items.unshift(entry);
-// Keep last 200 items
-global.__SENTIMENT_STORE__.items = global.__SENTIMENT_STORE__.items.slice(0, 200);
-
-
-return res.status(200).json({ ok: true, entry });
-} catch (err) {
-console.error("ingest error", err);
-return res.status(500).json({ error: "internal error" });
-}
+  res.status(200).json(sentiment)
 }

@@ -1,26 +1,28 @@
 // pages/history.js
-import { supabase } from '../lib/supabaseClient'
+import { useEffect, useState } from "react";
 
-export async function getServerSideProps() {
-  const { data } = await supabase
-    .from('sentiments')
-    .select('*')
-    .order('date', { ascending: false })
+export default function History() {
+  const [history, setHistory] = useState([]);
 
-  return { props: { history: data } }
-}
+  useEffect(() => {
+    async function fetchData() {
+      const res = await fetch("/api/summary?n=200");
+      const data = await res.json();
+      if (data.ok) setHistory(data.recent);
+    }
+    fetchData();
+  }, []);
 
-export default function History({ history }) {
   return (
     <div>
       <h1>センチメント履歴</h1>
       <ul>
         {history.map(h => (
-          <li key={h.date}>
-            {h.date} - {h.summary} ({h.sentiment_score})
+          <li key={h.id}>
+            {h.createdAt} - {h.text} (score: {h.score})
           </li>
         ))}
       </ul>
     </div>
-  )
+  );
 }
